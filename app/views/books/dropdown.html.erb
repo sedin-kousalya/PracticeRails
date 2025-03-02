@@ -1,0 +1,59 @@
+<h1>Find book price</h1>
+
+<label for="genre">Select a Genre</label>
+<select id="genre">
+    <option value="">--select a genre--</option>
+    <% @genres.each do |genre| %>
+        <option value="<%= genre %>"><%= genre %></option>
+    <% end %>
+</select>
+
+<label for="book">Select a book</label>
+<select id="book">
+    <option value="">--select a book--</option>
+</select>
+
+<h2 id="price"></h2>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+
+    $(document).ready(function(){
+        $("#genre").change(function(){
+            var genre = $(this).val()
+            $.ajax({
+                url: "/books_by_genre",
+                type: "GET",
+                data: {genre: genre},
+                success: function(books){
+                    $("#book").empty().append(`<option value="">--select a book--</option>`)
+                    $("#price").empty()
+                    books.forEach(function(book){
+                    $("#book").append(`<option value="${book.id}">${book.title}</option>`)
+                    })
+                    
+                },
+                error: function(){
+                    alert("Error populating books")
+                }
+            })
+        })
+
+        $("#book").change(function(){
+            var bookId = $(this).val()
+            $.ajax({
+                url: "/books/" + bookId,
+                type: "GET",
+                success: function(book){
+                    $("#price").empty()
+                    $("#price").text("Price: " + book.price)
+                },
+                error: function(){
+                    alert("Error displaying price")
+                }
+            })
+        })
+    })
+
+</script>
